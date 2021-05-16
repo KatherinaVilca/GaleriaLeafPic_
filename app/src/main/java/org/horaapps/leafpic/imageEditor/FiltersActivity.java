@@ -38,6 +38,7 @@ public class FiltersActivity extends ThemedActivity {
     }
 
     public void init_valores() {
+
         album_path = getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
         image_path = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
         bitmap_actual = BitmapFactory.decodeFile(image_path);
@@ -67,10 +68,10 @@ public class FiltersActivity extends ThemedActivity {
         filter4 = findViewById(R.id.filter40);
         filter5 = findViewById(R.id.filter50);
         filter6 = findViewById(R.id.filter60);
+
         sharedPreferencesFilters= new SharedPreferencesFilters(this);
         show_img.setImageBitmap(bitmap_actual);
         initFilters();
-
 
         button_apply.setOnClickListener(view -> {
 
@@ -85,8 +86,8 @@ public class FiltersActivity extends ThemedActivity {
             HistorialObserver.getInstance().push(comand);
             data.putExtra("new_file", outfile.getPath());
             setResult(Activity.RESULT_OK, data);
-
             onBackPressed();
+
         });
 
         button_back.setOnClickListener(view -> onBackPressed());
@@ -116,14 +117,14 @@ public class FiltersActivity extends ThemedActivity {
 
         for(int i=0; i<views.size() ;i++){
 
-             ImageView op= views.get(i);
-             DecoradorFilter fil=(DecoradorFilter) filtros.get(i);
+             ImageView imageView= views.get(i);
+             DecoradorFilter filtro=(DecoradorFilter) filtros.get(i);
 
-            op.setOnClickListener(view -> {
+            imageView.setOnClickListener(view -> {
 
-                comandFilters = new ShowFilter(show_img, fil, bitmap_actual);
+                comandFilters = new ShowFilter(show_img, filtro, bitmap_actual);
                 comandFilters.execute();
-                filtro_actual = fil.getNombre();
+                filtro_actual = filtro.getNombre();
 
             });
 
@@ -172,7 +173,7 @@ public class FiltersActivity extends ThemedActivity {
         views.add(filter6);
         return views;
     }
-    
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initTopFilters() {
 
