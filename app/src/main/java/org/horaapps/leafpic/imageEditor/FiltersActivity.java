@@ -47,12 +47,13 @@ public class FiltersActivity extends ThemedActivity {
 
     public void onCreate(Bundle savedInstanceState) {
 
+        super.onCreate(savedInstanceState);
+        sharedPreferencesFilters= new SharedPreferencesFilters(this);
         Button button_all_filters;
         Button button_top_filters;
         Button button_apply;
         Button button_back;
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filters);
         init_valores();
         button_all_filters = findViewById(R.id.button_all_filters);
@@ -69,7 +70,6 @@ public class FiltersActivity extends ThemedActivity {
         filter5 = findViewById(R.id.filter50);
         filter6 = findViewById(R.id.filter60);
 
-        sharedPreferencesFilters= new SharedPreferencesFilters(this);
         show_img.setImageBitmap(bitmap_actual);
         initFilters();
 
@@ -97,10 +97,11 @@ public class FiltersActivity extends ThemedActivity {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
-
+                /**
                 if(sharedPreferencesFilters.getContador()>0){
                     initTopFilters();
                 }
+                 */
             }
         });
 
