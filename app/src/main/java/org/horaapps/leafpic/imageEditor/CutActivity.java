@@ -51,7 +51,6 @@ public class CutActivity extends ThemedActivity{
                     Intent dataReturn= new Intent();
                     dataReturn.putExtra("new_file",imageUri.getPath());
                     setResult(Activity.RESULT_OK, dataReturn);
-                    onBackPressed();
                     break;
 
                 default:
@@ -59,6 +58,7 @@ public class CutActivity extends ThemedActivity{
                     break;
             }
         }
+        onBackPressed();
     }
 
      @SuppressWarnings("ResourceAsColor")

@@ -75,7 +75,7 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/calvin_header" />
+                 />
 
             <ImageView
                 android:id="@+id/filter20"
@@ -91,15 +91,14 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/calvin_header" />
+                 />
 
             <ImageView
                 android:id="@+id/filter40"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/calvin_header" />
+                android:scaleType="centerInside" />
 
             <ImageView
                 android:id="@+id/filter50"
@@ -107,7 +106,7 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/calvin_header" />
+                />
 
             <ImageView
                 android:id="@+id/filter60"
@@ -115,7 +114,14 @@
                 android:layout_height="90dp"
                 android:layout_margin="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/calvin_header" />
+                 />
+
+            <ImageView
+                android:id="@+id/filter70"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:scaleType="centerInside" />
 
         </LinearLayout>
     </HorizontalScrollView>

@@ -2,6 +2,7 @@ package org.horaapps.leafpic.imageEditor;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -23,7 +24,7 @@ import java.util.List;
 public class FiltersActivity extends ThemedActivity {
 
     private String filtro_actual;
-    private ImageView show_img, filter1, filter2, filter3, filter4, filter5, filter6, original;
+    private ImageView show_img, original, filter1, filter2, filter3, filter4, filter5, filter6, filter7;
     private String album_path;
 
     private Bitmap bitmap_actual;
@@ -47,6 +48,7 @@ public class FiltersActivity extends ThemedActivity {
 
     public void onCreate(Bundle savedInstanceState) {
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
         sharedPreferencesFilters= new SharedPreferencesFilters(this);
         Button button_all_filters;
@@ -69,6 +71,7 @@ public class FiltersActivity extends ThemedActivity {
         filter4 = findViewById(R.id.filter40);
         filter5 = findViewById(R.id.filter50);
         filter6 = findViewById(R.id.filter60);
+        filter7 = findViewById(R.id.filter70);
 
         show_img.setImageBitmap(bitmap_actual);
         initFilters();
@@ -86,6 +89,7 @@ public class FiltersActivity extends ThemedActivity {
             HistorialObserver.getInstance().push(comand);
             data.putExtra("new_file", outfile.getPath());
             setResult(Activity.RESULT_OK, data);
+
             onBackPressed();
 
         });
@@ -110,16 +114,25 @@ public class FiltersActivity extends ThemedActivity {
 
     public void initFilters() {
 
-        LinkedList<ImageView> views= getImageViews();
-        LinkedList<Filter> filtros= getListaFiltros();
+        CustomSampleFilters filtros = new CustomSampleFilters();
+        LinkedList<ImageView> views = getImageViews();
+        LinkedList<Filter> listaFiltros = filtros.getListaFiltros();
+
 
         initOriginal();
-        initMiniaturaFiltros(views,filtros);
+        System.out.println("Height: "+ original.getHeight() + " Width: "+original.getWidth());
+       //
+        int width = original.getDrawable().getIntrinsicWidth();
+        int height = original.getDrawable().getIntrinsicHeight();
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap_actual, width,height, false);
+
+        System.out.println("pasa esto?? ");
+        initMiniaturaFiltros(views,listaFiltros, resizedBitmap);
 
         for(int i=0; i<views.size() ;i++){
 
-             ImageView imageView= views.get(i);
-             DecoradorFilter filtro=(DecoradorFilter) filtros.get(i);
+             ImageView imageView = views.get(i);
+             DecoradorFilter filtro = (DecoradorFilter) listaFiltros.get(i);
 
             imageView.setOnClickListener(view -> {
 
@@ -138,33 +151,21 @@ public class FiltersActivity extends ThemedActivity {
         original.setOnClickListener( view -> show_img.setImageBitmap(bitmap_actual) );
     }
 
-    private void initMiniaturaFiltros(LinkedList<ImageView> listaViews, LinkedList<Filter> listaFiltros) {
+    private void initMiniaturaFiltros(LinkedList<ImageView> listaViews, LinkedList<Filter> listaFiltros, Bitmap resizedBitmap) {
 
         CommandEditor com;
 
         for(int i=0; i<listaViews.size(); i++){
-            DecoradorFilter d= (DecoradorFilter) listaFiltros.get(i);
 
-            com= new ShowFilter(listaViews.get(i) ,d ,bitmap_actual);
+            DecoradorFilter d= (DecoradorFilter) listaFiltros.get(i);
+            com= new ShowFilter(listaViews.get(i) ,d ,resizedBitmap);
             com.execute();
         }
     }
 
-    private LinkedList<Filter> getListaFiltros(){
-
-        LinkedList<Filter> listaFiltros = new LinkedList<Filter> () ;
-        listaFiltros.add(CustomSampleFilters.getBlueMessFilter());
-        listaFiltros.add(CustomSampleFilters.getAweStruckVibeFilter());
-        listaFiltros.add(CustomSampleFilters.getLimeStutterFilter());
-        listaFiltros.add(CustomSampleFilters.getNightWhisperFilter());
-        listaFiltros.add(CustomSampleFilters.getStarLitFilter());
-        listaFiltros.add(CustomSampleFilters.getBlackAndWhite(bitmap_actual));
-        return listaFiltros;
-    }
-
     private LinkedList<ImageView> getImageViews() {
 
-        LinkedList<ImageView> views= new LinkedList<ImageView>();
+        LinkedList<ImageView> views= new LinkedList<>();
 
         views.add(filter1);
         views.add(filter2);
@@ -172,22 +173,24 @@ public class FiltersActivity extends ThemedActivity {
         views.add(filter4);
         views.add(filter5);
         views.add(filter6);
+        views.add(filter7);
         return views;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initTopFilters() {
 
-        List<String> lista = KeysFilters.listaFiltros;
+        List<String> listaNombresFiltros = KeysFilters.listaNombresFiltros;
+        LinkedList<Filter> listaFiltros= new CustomSampleFilters().getListaFiltros();
         LinkedList<ImageView> views = getImageViews();
         ComparadorValores comparator = new ComparadorValores(sharedPreferencesFilters);
-        lista.sort(comparator);
+        listaNombresFiltros.sort(comparator);
 
         int i;
 
         for ( i=0; i < 3; i++) {
 
-            DecoradorFilter filtro= buscarFiltro(lista.get(i));
+            DecoradorFilter filtro = buscarFiltro(listaNombresFiltros.get(i), listaFiltros);
             ImageView imageView = views.get(i);
 
 
@@ -203,15 +206,14 @@ public class FiltersActivity extends ThemedActivity {
         }
     }
 
-    private DecoradorFilter buscarFiltro(String nom) {
+    private DecoradorFilter buscarFiltro(String nom, LinkedList<Filter> listaFiltros) {
 
-        LinkedList<Filter> lista = getListaFiltros();
         boolean encontre = false;
         DecoradorFilter filtro = null;
 
-        for (int i = 0; i < lista.size() || !encontre; i++) {
+        for (int i = 0; i < listaFiltros.size() || !encontre; i++) {
 
-            filtro = (DecoradorFilter) lista.get(i);
+            filtro = (DecoradorFilter) listaFiltros.get(i);
             if (filtro.getNombre().equals(nom)) {
                 encontre = true;
             }

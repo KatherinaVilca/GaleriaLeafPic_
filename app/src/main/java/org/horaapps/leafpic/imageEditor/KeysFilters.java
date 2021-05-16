@@ -10,7 +10,8 @@ public class KeysFilters {
     public static final String STARTLITFILTER= "StarLitFilter";
     public static final String AWESTRUCKVIBEFILTER = "AweStruckVibeFilter";
     public static final String BLACKANDWHITEFILTER = "BlackAndWhite";
-    public static final List<String> listaFiltros= Arrays.asList(NIGHTWHISPERFILTER,BLUEMESSFILTER,LIMESTUTTERFILTER,STARTLITFILTER,AWESTRUCKVIBEFILTER,BLACKANDWHITEFILTER);
+    public static final String MOREWHITETHANBLACK = "MoreWhiteThanBlack";
+    public static final List<String> listaNombresFiltros= Arrays.asList(NIGHTWHISPERFILTER,BLUEMESSFILTER,LIMESTUTTERFILTER,STARTLITFILTER,AWESTRUCKVIBEFILTER,BLACKANDWHITEFILTER,MOREWHITETHANBLACK);
 
     private KeysFilters(){
 

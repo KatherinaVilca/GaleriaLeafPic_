@@ -1,11 +1,15 @@
 package org.horaapps.leafpic.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -18,6 +22,7 @@ import org.horaapps.leafpic.imageEditor.ImageSettingsActivity;
 import org.horaapps.leafpic.imageEditor.SaveImage;
 import org.horaapps.liz.ThemedActivity;
 
+import java.io.File;
 import java.util.Observer;
 import java.util.Stack;
 
@@ -30,9 +35,16 @@ public class EditActivity extends ThemedActivity {
     private static final int request_code_filters_Activity = 2;
     private Stack<CommandEditor> historial;
     private Observer observer;
+    private Bitmap bitmapOriginal;
+    private String new_path;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit);
 
         Button buttonFilters;
         Button buttonCrop;
@@ -40,8 +52,6 @@ public class EditActivity extends ThemedActivity {
         Button buttonDeshacer;
         Button buttonSettings;
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit);
         init_valores();
         setSupportActionBar(toolbar);
 
@@ -54,7 +64,7 @@ public class EditActivity extends ThemedActivity {
         img = findViewById(R.id.edit_imag);
 
         img.setImageURI(Uri.parse(imagenPath));
-        historial= new Stack<CommandEditor>();
+        //historial= new Stack<CommandEditor>();
         observer=obtenerObservador();
         HistorialObserver.getInstance().addObserver(observer);
 
@@ -83,7 +93,7 @@ public class EditActivity extends ThemedActivity {
            startActivityForResult(cutIntent,request_code_filters_Activity);
         });
 
-        buttonDeshacer.setOnClickListener(view -> undo());
+        buttonDeshacer.setOnClickListener(view -> { if (historial != null) undo(); }); // VER. Si voy a una activity secundaria y no hago nada (por mas que antes si haya echo algo), se rompe. Historial is a null reference-
 
         buttonSettings.setOnClickListener(view -> {
 
@@ -92,11 +102,38 @@ public class EditActivity extends ThemedActivity {
             settingsIntent.putExtra("EXTRA_IMAGE_PATH",imagenPath);
             startActivityForResult(settingsIntent,request_code_filters_Activity);
         });
+
+        img.setOnTouchListener(new View.OnTouchListener(){
+
+            public boolean onTouch(View v, MotionEvent event) {
+                switch(event.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN :
+                        img.setImageBitmap(bitmapOriginal);
+                        break;
+                    case MotionEvent.ACTION_UP :
+                        img.setImageURI(Uri.parse(imagenPath));
+                        break;
+                }
+                return true;
+            }
+        });
+
     }
 
     public void init_valores() {
+
         albumPath= getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
         imagenPath = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
+
+        if(bitmapOriginal == null){
+            setOriginalBitmap(imagenPath);
+        }
+    }
+
+    private void setOriginalBitmap(String imagenPath){
+
+        bitmapOriginal = BitmapFactory.decodeFile(imagenPath);
     }
 
     private void undo() {
@@ -117,10 +154,11 @@ public class EditActivity extends ThemedActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null && resultCode == RESULT_OK) {
 
-            String new_path = data.getStringExtra("new_file");
+            new_path = data.getStringExtra("new_file");
             Bitmap bitmap = BitmapFactory.decodeFile(new_path);
             img.setImageBitmap(bitmap);
             toUpdatePath(new_path);
+
         }
     }
 
@@ -130,14 +168,23 @@ public class EditActivity extends ThemedActivity {
 
    @Override
    public void onBackPressed(){
+
        HistorialObserver.getInstance().deleteObserver(observer);
        HistorialObserver.getInstance().destruir(); // solo cuando me voy de la app
        anular();
+
+       if(new_path != null){
+
+            File f= new File(new_path);
+            f.delete();
+       }
+
        super.onBackPressed();
    }
 
     @Override
     public void onResume() {
+
         super.onResume();
         observer=obtenerObservador();
         HistorialObserver.getInstance().addObserver(observer);
@@ -145,6 +192,7 @@ public class EditActivity extends ThemedActivity {
 
     @Override
     protected void onPause() {
+
        super.onPause();
        HistorialObserver.getInstance().deleteObserver(observer);
        anular();
@@ -152,13 +200,14 @@ public class EditActivity extends ThemedActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
 
+        super.onDestroy();
         HistorialObserver.getInstance().deleteObserver(observer);
         anular();
     }
 
     public Observer obtenerObservador(){
+
         return (observable, o) -> historial=  (Stack<CommandEditor>) o;
     }
 
