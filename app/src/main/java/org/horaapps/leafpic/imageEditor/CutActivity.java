@@ -17,10 +17,10 @@ import java.io.File;
 public class CutActivity extends ThemedActivity{
 
     private String imagePath;
-    private CommandEditor comand;
 
     public void onCreate(Bundle savedInstanceState) {
 
+        CommandEditor comand;
         super.onCreate(savedInstanceState);
         imagePath = getIntent().getExtras().getString("EXTRA_PATH");
 
@@ -51,7 +51,6 @@ public class CutActivity extends ThemedActivity{
                     Intent dataReturn= new Intent();
                     dataReturn.putExtra("new_file",imageUri.getPath());
                     setResult(Activity.RESULT_OK, dataReturn);
-                    System.out.println("El nom luego de recortar la foto"+imageUri.getPath());
                     onBackPressed();
                     break;
 

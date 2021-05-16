@@ -1,9 +1,9 @@
 package org.horaapps.leafpic.imageEditor;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import org.horaapps.leafpic.activities.EditActivity;
 import org.horaapps.leafpic.data.StorageHelper;
 
 import java.io.File;
@@ -14,11 +14,11 @@ public class SaveImage extends CommandEditor{
 
     protected String album_path;
     protected  String path;
-    private EditActivity editor;
-    public SaveImage(EditActivity editor, String path,String album_path){
+    private final Context context;
+    public SaveImage(Context context, String path, String album_path){
 
         super(null,null);
-        this.editor=editor;
+        this.context= context;
         this.album_path=album_path;
         this.path=path;
     }
@@ -36,6 +36,6 @@ public class SaveImage extends CommandEditor{
         }
 
         BitmapFactory.decodeFile(path).compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-        StorageHelper.copyFile(editor.getApplicationContext(), outfile, new File(album_path));
+        StorageHelper.copyFile(context, outfile, new File(album_path));
     }
 }

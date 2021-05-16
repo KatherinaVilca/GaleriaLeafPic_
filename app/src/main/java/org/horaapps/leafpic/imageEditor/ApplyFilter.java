@@ -11,20 +11,18 @@ import java.io.FileOutputStream;
 public class ApplyFilter extends CommandEditor {
 
     private File outfile;
-    private ImageView img;
+    private Bitmap bitmap;
 
     public ApplyFilter(ImageView show_img, File outfile, String path){
 
         super(path,outfile);
-        System.out.println("El path que estoy guardando: "+path);
+
         this.outfile= outfile;
-        this.img= show_img;
+        BitmapDrawable d2 = (BitmapDrawable) show_img.getDrawable();
+        bitmap = d2.getBitmap();
     }
 
     public void execute(){
-
-        BitmapDrawable d2 = (BitmapDrawable) img.getDrawable();
-        Bitmap bitmap = d2.getBitmap();
 
         FileOutputStream outputStream= null;
         try {

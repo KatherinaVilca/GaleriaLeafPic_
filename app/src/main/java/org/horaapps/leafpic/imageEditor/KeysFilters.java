@@ -9,7 +9,8 @@ public class KeysFilters {
     public static final String LIMESTUTTERFILTER = "LimeStutterFilter";
     public static final String STARTLITFILTER= "StarLitFilter";
     public static final String AWESTRUCKVIBEFILTER = "AweStruckVibeFilter";
-    public static final List<String> listaFiltros= Arrays.asList(NIGHTWHISPERFILTER,BLUEMESSFILTER,LIMESTUTTERFILTER,STARTLITFILTER,AWESTRUCKVIBEFILTER);
+    public static final String BLACKANDWHITEFILTER = "BlackAndWhite";
+    public static final List<String> listaFiltros= Arrays.asList(NIGHTWHISPERFILTER,BLUEMESSFILTER,LIMESTUTTERFILTER,STARTLITFILTER,AWESTRUCKVIBEFILTER,BLACKANDWHITEFILTER);
 
     private KeysFilters(){
 

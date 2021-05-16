@@ -6,8 +6,8 @@ import java.util.Stack;
 
 public class HistorialObserver extends Observable implements Serializable {
 
-    private Stack<CommandEditor> historial = new Stack<CommandEditor>();
-    private static HistorialObserver hObs= new HistorialObserver();
+    private final Stack<CommandEditor> historial = new Stack<>();
+    private static final HistorialObserver hObs= new HistorialObserver();
 
     public static HistorialObserver getInstance(){
         return hObs;
@@ -25,6 +25,10 @@ public class HistorialObserver extends Observable implements Serializable {
         setChanged();
         notifyObservers(historial);
         return cm;
+    }
+    public void destruir(){
+        deleteObservers();
+        historial.removeAllElements();
     }
 
 }

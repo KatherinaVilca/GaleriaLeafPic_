@@ -9,8 +9,8 @@ import com.zomato.photofilters.imageprocessors.Filter;
 public class ShowFilter extends CommandEditor{
 
     protected Filter filtro;
-    private Bitmap bitmap;
-    private ImageView img;
+    private final Bitmap bitmap;
+    private final ImageView img;
 
     public ShowFilter(ImageView img, Filter filter, Bitmap bitmap){
         super(null,null);

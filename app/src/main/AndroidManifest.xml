@@ -198,7 +198,7 @@
             android:label="Editor"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
-        <activity android:name=".imageEditor.Filters_activity"
+        <activity android:name=".imageEditor.FiltersActivity"
             android:label="Filtros_editor"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             />

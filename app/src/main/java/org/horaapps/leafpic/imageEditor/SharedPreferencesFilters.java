@@ -6,16 +6,19 @@ import android.content.SharedPreferences;
 
 public class SharedPreferencesFilters {
 
-    private  SharedPreferences sharedPref;
+    private final SharedPreferences sharedPref;
+
 
     public SharedPreferencesFilters(Activity activity){
 
         sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        sharedPref.edit().putInt("Contador",0);
     }
     public void setEstadistica(String nombreFiltro, int cantidad){
 
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(nombreFiltro,cantidad);
+        aumentarEnUno("Contador");
         editor.apply();
     }
 
@@ -27,5 +30,9 @@ public class SharedPreferencesFilters {
     public void aumentarEnUno(String nombreFiltro){
         int cant=getEstadistica(nombreFiltro);
         setEstadistica(nombreFiltro,++cant);
+    }
+
+    public int getContador(){
+        return sharedPref.getInt("Contador",0);
     }
 }

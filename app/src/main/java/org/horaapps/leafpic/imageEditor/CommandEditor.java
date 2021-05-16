@@ -24,7 +24,9 @@ public abstract class CommandEditor extends ThemedActivity {
     }
 
     protected void setPath(String p){
+
         previusImagePath=p;
     }
-    public abstract void execute();
+
+    protected abstract void execute();
 }

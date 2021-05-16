@@ -414,5 +414,12 @@
     <string name="timeline_grouping_menu_week">Week</string>
     <string name="timeline_grouping_menu_month">Month</string>
     <string name="timeline_grouping_menu_year">Year</string>
+    <string name="Filtros">Filtros</string>
+    <string name="Aplicar">Aplicar</string>
+    <string name="filtros">filtros</string>
+    <string name="mis_favoritos">Mis favoritos</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="recortar">Recortar</string>
+    <string name="editor">Editor</string>
 
 </resources>

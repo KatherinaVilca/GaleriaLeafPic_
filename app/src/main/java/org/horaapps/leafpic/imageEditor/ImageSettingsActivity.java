@@ -19,6 +19,7 @@ public class ImageSettingsActivity extends ThemedActivity{
     private CommandEditor comand;
     private Bitmap bitmap_act;
     private  Bitmap bitmap_a_modificar;
+    private DatosImagen datos;
 
     static {
         System.loadLibrary("NativeImageProcessor");
@@ -41,46 +42,38 @@ public class ImageSettingsActivity extends ThemedActivity{
         show_Image.setImageBitmap(bitmap_act);
 
         bitmap_a_modificar= bitmap_act.copy(Bitmap.Config.ARGB_8888,true);
+        datos= new DatosImagen(0,0,0,bitmap_a_modificar);
 
+        System.out.println("Cuantas veces se ejecutara esto? ");
         seekBar_Brillo.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-                System.out.println("El valor de i: "+i);
-               // bitmap_a_modificar= bitmap_act.copy(Bitmap.Config.ARGB_8888,true);
-                bitmap_a_modificar= ImageProcessor.doBrightness(i,bitmap_a_modificar);
-                show_Image.setImageBitmap(bitmap_a_modificar);
-
-                /**
-                BitmapDrawable d2 = (BitmapDrawable) show_Image.getDrawable();
-                Bitmap bitmap_actual = d2.getBitmap();
-                bitmap_a_modificar=ImageProcessor.doBrightness(i,bitmap_a_modificar);
-                show_Image.setImageBitmap(bitmap_a_modificar);
-                 */
+                datos.setBrillo(i);
+                Bitmap in= ImageProcessor.doBrightness(datos.getBrillo(),datos.getImagen());
+                show_Image.setImageBitmap(in);
+                datos.setImagen(in);
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar)
             {
-
-                //bitmap_act=bitmap_a_modificar;
-                //bitmap_act= bitmap_a_modificar.copy(Bitmap.Config.ARGB_8888,true);
             }
         });
 
         seekBar_Contraste.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                datos.setContraste(i);
+                Bitmap in= ImageProcessor.doContrast(datos.getContraste(),datos.getImagen());
+                show_Image.setImageBitmap(in);
+                datos.setImagen(in);
+                //Bitmap im=datos.getImagen();
+               // show_Image.setImageBitmap( ImageProcessor.doContrast(datos.getContraste(),im) );
 
-                System.out.println("El valor de i: "+i);
-                //bitmap_a_modificar= bitmap_act.copy(Bitmap.Config.ARGB_8888,true);
-                bitmap_a_modificar= ImageProcessor.doContrast(i/10,bitmap_a_modificar);
-                show_Image.setImageBitmap(bitmap_a_modificar);
             }
 
             @Override
@@ -99,7 +92,14 @@ public class ImageSettingsActivity extends ThemedActivity{
         seekBar_Saturacion.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                System.out.println(i);
+                datos.setSaturacion(i);
+                Bitmap in= ImageProcessor.doSaturation(datos.getImagen(),datos.getSaturacion());
+                show_Image.setImageBitmap(in);
+                datos.setImagen(in);
 
+               // Bitmap im=datos.getImagen();
+               // show_Image.setImageBitmap( ImageProcessor.doSaturation(im,datos.getSaturacion()));
             }
 
             @Override
