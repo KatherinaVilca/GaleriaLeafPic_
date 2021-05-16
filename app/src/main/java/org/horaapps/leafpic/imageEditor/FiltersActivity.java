@@ -67,10 +67,10 @@ public class FiltersActivity extends ThemedActivity {
         filter4 = findViewById(R.id.filter40);
         filter5 = findViewById(R.id.filter50);
         filter6 = findViewById(R.id.filter60);
-
+        sharedPreferencesFilters= new SharedPreferencesFilters(this);
         show_img.setImageBitmap(bitmap_actual);
         initFilters();
-        sharedPreferencesFilters= new SharedPreferencesFilters(this);
+
 
         button_apply.setOnClickListener(view -> {
 
@@ -92,9 +92,11 @@ public class FiltersActivity extends ThemedActivity {
         button_back.setOnClickListener(view -> onBackPressed());
 
         button_top_filters.setOnClickListener(new View.OnClickListener() {
+
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
+
                 if(sharedPreferencesFilters.getContador()>0){
                     initTopFilters();
                 }
@@ -170,23 +172,7 @@ public class FiltersActivity extends ThemedActivity {
         views.add(filter6);
         return views;
     }
-
-
-/**        filter6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                comand = new ShowFilter(show_img, SampleFilters.getAweStruckVibeFilter(), bitmap_actual);
-                comand.execute();
-                filtro_actual = KeysFilters.AWESTRUCKVIBEFILTER;
-            }
-        });
-
-
-    }
- */
-
-
+    
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initTopFilters() {
 
