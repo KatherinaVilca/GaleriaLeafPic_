@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
@@ -27,10 +29,12 @@ public class FiltersActivity extends ThemedActivity {
     private ImageView show_img, original, filter1, filter2, filter3, filter4, filter5, filter6, filter7;
     private String album_path;
 
-    private Bitmap bitmap_actual;
+    private Bitmap bitmapImagen;
     private String image_path;
     private CommandEditor comand;
     private CommandEditor comandFilters;
+    private LinkedList<Filter> listaFiltros;
+    private Bitmap redimencionImagen;
 
     private SharedPreferencesFilters sharedPreferencesFilters;
 
@@ -42,7 +46,7 @@ public class FiltersActivity extends ThemedActivity {
 
         album_path = getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
         image_path = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
-        bitmap_actual = BitmapFactory.decodeFile(image_path);
+        //bitmapImagen = BitmapFactory.decodeFile(image_path);
 
     }
 
@@ -73,14 +77,19 @@ public class FiltersActivity extends ThemedActivity {
         filter6 = findViewById(R.id.filter60);
         filter7 = findViewById(R.id.filter70);
 
-        show_img.setImageBitmap(bitmap_actual);
+        show_img.setImageURI(Uri.parse(image_path));
+
         initFilters();
 
         button_apply.setOnClickListener(view -> {
 
             String filename = String.format("%d.jpg", System.currentTimeMillis());
             File outfile = new File(album_path, filename);
-            comand = new ApplyFilter(show_img, outfile, image_path);
+
+            BitmapDrawable d2 = (BitmapDrawable) show_img.getDrawable();
+            Bitmap bitmap = d2.getBitmap();
+            Bitmap bitmap_a_modificar= bitmap.copy(Bitmap.Config.ARGB_8888,true);
+            comand = new ApplyFilter(bitmap_a_modificar, outfile, image_path);
 
             sharedPreferencesFilters.aumentarEnUno(filtro_actual);
 
@@ -116,17 +125,16 @@ public class FiltersActivity extends ThemedActivity {
 
         CustomSampleFilters filtros = new CustomSampleFilters();
         LinkedList<ImageView> views = getImageViews();
-        LinkedList<Filter> listaFiltros = filtros.getListaFiltros();
-
+        listaFiltros = filtros.getListaFiltros();
 
         initOriginal();
-        System.out.println("Height: "+ original.getHeight() + " Width: "+original.getWidth());
-       //
+
+
         int width = original.getDrawable().getIntrinsicWidth();
         int height = original.getDrawable().getIntrinsicHeight();
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap_actual, width,height, false);
 
-        System.out.println("pasa esto?? ");
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap( decodificar(image_path)  , width,height, false);
+
         initMiniaturaFiltros(views,listaFiltros, resizedBitmap);
 
         for(int i=0; i<views.size() ;i++){
@@ -136,7 +144,7 @@ public class FiltersActivity extends ThemedActivity {
 
             imageView.setOnClickListener(view -> {
 
-                comandFilters = new ShowFilter(show_img, filtro, bitmap_actual);
+                comandFilters = new ShowFilter(show_img, filtro, decodificar(image_path));
                 comandFilters.execute();
                 filtro_actual = filtro.getNombre();
 
@@ -147,8 +155,8 @@ public class FiltersActivity extends ThemedActivity {
 
     private void initOriginal(){
 
-        original.setImageBitmap(bitmap_actual);
-        original.setOnClickListener( view -> show_img.setImageBitmap(bitmap_actual) );
+        original.setImageURI(Uri.parse(image_path));
+        original.setOnClickListener( view -> show_img.setImageURI(Uri.parse(image_path) ));
     }
 
     private void initMiniaturaFiltros(LinkedList<ImageView> listaViews, LinkedList<Filter> listaFiltros, Bitmap resizedBitmap) {
@@ -198,7 +206,7 @@ public class FiltersActivity extends ThemedActivity {
                 @Override
                 public void onClick(View view) {
 
-                    comand = new ShowFilter(imageView, filtro, bitmap_actual);
+                    comand = new ShowFilter(imageView, filtro, redimencionImagen);
                     comand.execute();
                 }
             });
@@ -220,6 +228,12 @@ public class FiltersActivity extends ThemedActivity {
 
         }
             return filtro;
+    }
+
+    private Bitmap decodificar(String image_path){
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        return BitmapFactory.decodeFile(image_path ,options);
     }
 }
 
