@@ -8,12 +8,12 @@ public class SharedPreferencesFilters {
 
     private final SharedPreferences sharedPref;
 
-
     public SharedPreferencesFilters(Activity activity){
 
         sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
     }
     public void setEstadistica(String nombreFiltro, int cantidad){
+
 
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(nombreFiltro,cantidad);
@@ -26,7 +26,19 @@ public class SharedPreferencesFilters {
     }
 
     public void aumentarEnUno(String nombreFiltro){
-        int cant=getEstadistica(nombreFiltro);
-        setEstadistica(nombreFiltro,++cant);
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        int valor = sharedPref.getInt(nombreFiltro,0);
+        editor.putInt(nombreFiltro, valor+1);
+
+        int con = sharedPref.getInt("Contador",0);
+        editor.putInt("Contador",con+1);
+
+        System.out.println("El contador tiene: "+sharedPref.getInt("Contador",0));
+        editor.apply();
+    }
+
+    public int getContador(){
+     return  getEstadistica("Contador");
     }
 }

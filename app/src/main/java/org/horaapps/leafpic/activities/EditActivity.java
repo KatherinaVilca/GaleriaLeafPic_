@@ -64,7 +64,7 @@ public class EditActivity extends ThemedActivity {
         img = findViewById(R.id.edit_imag);
 
         img.setImageURI(Uri.parse(imagenPath));
-        //historial= new Stack<CommandEditor>();
+
         observer=obtenerObservador();
         HistorialObserver.getInstance().addObserver(observer);
 
@@ -93,7 +93,7 @@ public class EditActivity extends ThemedActivity {
            startActivityForResult(cutIntent,request_code_filters_Activity);
         });
 
-        buttonDeshacer.setOnClickListener(view -> { if (historial != null) undo(); }); // VER. Si voy a una activity secundaria y no hago nada (por mas que antes si haya echo algo), se rompe. Historial is a null reference-
+        buttonDeshacer.setOnClickListener(view -> { undo(); }); // VER. Si voy a una activity secundaria y no hago nada (por mas que antes si haya echo algo), se rompe. Historial is a null reference-
 
         buttonSettings.setOnClickListener(view -> {
 
@@ -137,21 +137,35 @@ public class EditActivity extends ThemedActivity {
     }
 
     private void undo() {
+
         String new_path;
 
-        if (!historial.isEmpty()) {
+        if (historial.isEmpty()) {
 
-            CommandEditor command = HistorialObserver.getInstance().pop();
-
-            if (command != null) {
-                new_path= command.deshacer();
-                img.setImageURI(Uri.parse(new_path));
-                toUpdatePath(new_path);
-            }
+            return;
         }
+
+        CommandEditor command = HistorialObserver.getInstance().pop();
+
+            while( !historial.isEmpty() &&!command.getCommandValido() ) {
+                command= HistorialObserver.getInstance().pop();
+            }
+
+            if (command == null || !command.getCommandValido() ) {
+
+                return;
+            }
+
+            new_path = command.deshacer();
+            img.setImageURI(Uri.parse(new_path));
+                toUpdatePath(new_path);
     }
 
+
+
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (data != null && resultCode == RESULT_OK) {
 
             new_path = data.getStringExtra("new_file");
@@ -170,7 +184,7 @@ public class EditActivity extends ThemedActivity {
    public void onBackPressed(){
 
        HistorialObserver.getInstance().deleteObserver(observer);
-       HistorialObserver.getInstance().destruir(); // solo cuando me voy de la app
+       HistorialObserver.getInstance().destruir();
        anular();
 
        if(new_path != null){

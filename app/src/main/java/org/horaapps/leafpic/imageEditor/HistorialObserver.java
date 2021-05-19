@@ -18,7 +18,6 @@ public class HistorialObserver extends Observable implements Serializable {
         historial.push(c);
         setChanged();
         notifyObservers(historial);
-        System.out.println("Agregue comnando ");
     }
 
     public CommandEditor pop() {
@@ -36,4 +35,7 @@ public class HistorialObserver extends Observable implements Serializable {
         return historial.isEmpty();
     }
 
+    public Stack<CommandEditor> getStack(){
+        return historial;
+    }
 }

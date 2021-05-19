@@ -28,5 +28,9 @@ public abstract class CommandEditor extends ThemedActivity {
         previusImagePath=p;
     }
 
+    public boolean getCommandValido(){
+        return true;
+    }
+
     protected abstract void execute();
 }

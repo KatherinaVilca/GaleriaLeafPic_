@@ -58,7 +58,7 @@ public class CustomSampleFilters {
 
     public static Filter getBlackAndWhite(){
 
-        Filter filtro = new Filter();
+        Filter filtro = SampleFilters.getNightWhisperFilter();
         filtro.addSubFilter( new SaturationSubFilter(-10));
         DecoradorFilter filtroDecorado = new DecoradorFilter(KeysFilters.BLACKANDWHITEFILTER);
         filtroDecorado.addSubFilters(filtro.getSubFilters());
@@ -68,8 +68,9 @@ public class CustomSampleFilters {
 
     public static Filter getMoreWhiteThanBlack(){
 
-        Filter filtro = getBlackAndWhite();
+        Filter filtro = SampleFilters.getLimeStutterFilter();
         filtro.addSubFilter( new ContrastSubFilter(0.8f));
+        filtro.addSubFilter( new SaturationSubFilter(-10));
         DecoradorFilter filtroDecorado = new DecoradorFilter(KeysFilters.MOREWHITETHANBLACK);
         filtroDecorado.addSubFilters(filtro.getSubFilters());
         return filtroDecorado;

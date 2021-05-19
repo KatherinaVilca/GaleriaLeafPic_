@@ -17,10 +17,6 @@ public class ApplyFilter extends CommandEditor {
         super(path, outfile);
         this.outfile = outfile;
         this.bitmap = bitmap;
-/**
-        BitmapDrawable d2 = (BitmapDrawable) m.getDrawable();
-        bitmap = d2.getBitmap();
- */
  }
 
     public void execute() {
@@ -31,9 +27,7 @@ public class ApplyFilter extends CommandEditor {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        if (bitmap == null) {
-            System.out.println("El bitmap es nulo¿ ");
-        }
+
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
     }
 }

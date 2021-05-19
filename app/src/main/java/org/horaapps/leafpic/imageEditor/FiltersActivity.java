@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -46,7 +45,6 @@ public class FiltersActivity extends ThemedActivity {
 
         album_path = getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
         image_path = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
-        //bitmapImagen = BitmapFactory.decodeFile(image_path);
 
     }
 
@@ -58,14 +56,12 @@ public class FiltersActivity extends ThemedActivity {
         Button button_all_filters;
         Button button_top_filters;
         Button button_apply;
-        Button button_back;
 
         setContentView(R.layout.activity_filters);
         init_valores();
         button_all_filters = findViewById(R.id.button_all_filters);
         button_apply = findViewById(R.id.button_apply);
         button_top_filters = findViewById(R.id.button_top_filters);
-        button_back = findViewById(R.id.button_back);
 
         show_img = findViewById(R.id.show_img);
         original = findViewById(R.id.Original);
@@ -103,22 +99,22 @@ public class FiltersActivity extends ThemedActivity {
 
         });
 
-        button_back.setOnClickListener(view -> onBackPressed());
 
         button_top_filters.setOnClickListener(new View.OnClickListener() {
 
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
-                /**
+
                 if(sharedPreferencesFilters.getContador()>0){
                     initTopFilters();
                 }
-                 */
+
             }
         });
 
         button_all_filters.setOnClickListener(view -> initFilters());
+
     }
 
     public void initFilters() {
@@ -133,9 +129,9 @@ public class FiltersActivity extends ThemedActivity {
         int width = original.getDrawable().getIntrinsicWidth();
         int height = original.getDrawable().getIntrinsicHeight();
 
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap( decodificar(image_path)  , width,height, false);
-
-        initMiniaturaFiltros(views,listaFiltros, resizedBitmap);
+        //Bitmap resizedBitmap = Bitmap.createScaledBitmap( decodificar(image_path)  , width,height, false);
+        Bitmap resizedBitmap = decodificar(image_path,width,height);
+        initMiniaturaFiltros(views,listaFiltros, resizedBitmap,views.size());
 
         for(int i=0; i<views.size() ;i++){
 
@@ -144,12 +140,15 @@ public class FiltersActivity extends ThemedActivity {
 
             imageView.setOnClickListener(view -> {
 
-                comandFilters = new ShowFilter(show_img, filtro, decodificar(image_path));
+                comandFilters = new ShowFilter(show_img, filtro, decodificar(image_path, show_img.getWidth(), show_img.getHeight()));
                 comandFilters.execute();
                 filtro_actual = filtro.getNombre();
-
             });
 
+        }
+
+        for( int g=0; g<views.size(); g++){
+            views.get(g).setVisibility(View.VISIBLE);
         }
     }
 
@@ -159,11 +158,11 @@ public class FiltersActivity extends ThemedActivity {
         original.setOnClickListener( view -> show_img.setImageURI(Uri.parse(image_path) ));
     }
 
-    private void initMiniaturaFiltros(LinkedList<ImageView> listaViews, LinkedList<Filter> listaFiltros, Bitmap resizedBitmap) {
+    private void initMiniaturaFiltros(LinkedList<ImageView> listaViews, LinkedList<Filter> listaFiltros, Bitmap resizedBitmap, int limite) {
 
         CommandEditor com;
 
-        for(int i=0; i<listaViews.size(); i++){
+        for(int i=0; i<limite; i++){
 
             DecoradorFilter d= (DecoradorFilter) listaFiltros.get(i);
             com= new ShowFilter(listaViews.get(i) ,d ,resizedBitmap);
@@ -194,46 +193,66 @@ public class FiltersActivity extends ThemedActivity {
         ComparadorValores comparator = new ComparadorValores(sharedPreferencesFilters);
         listaNombresFiltros.sort(comparator);
 
-        int i;
 
-        for ( i=0; i < 3; i++) {
+        int i=0;
+        int f = sharedPreferencesFilters.getContador();
 
-            DecoradorFilter filtro = buscarFiltro(listaNombresFiltros.get(i), listaFiltros);
+
+        for ( ; i<f && i<3; i++) {
+
+            DecoradorFilter filtrof = buscarFiltro(listaNombresFiltros.get(i), listaFiltros);
             ImageView imageView = views.get(i);
-
+            CommandEditor c= new ShowFilter(imageView,filtrof,decodificar(image_path, imageView.getWidth(), imageView.getHeight()));
+            c.execute();
 
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                    comand = new ShowFilter(imageView, filtro, redimencionImagen);
+                   System.out.println(filtrof.getNombre());
+                    comand = new ShowFilter(show_img, filtrof, decodificar(image_path,show_img.getWidth(), show_img.getHeight()));
                     comand.execute();
                 }
             });
-
+        }
+        int k= i;
+        for(; k< views.size(); k++){
+            views.get(k).setVisibility(View.GONE);
         }
     }
 
     private DecoradorFilter buscarFiltro(String nom, LinkedList<Filter> listaFiltros) {
 
         boolean encontre = false;
-        DecoradorFilter filtro = null;
+        DecoradorFilter filtroo = null;
 
-        for (int i = 0; i < listaFiltros.size() || !encontre; i++) {
+        for (int i = 0; !encontre && i < listaFiltros.size() ; i++) {
 
-            filtro = (DecoradorFilter) listaFiltros.get(i);
-            if (filtro.getNombre().equals(nom)) {
+            filtroo = (DecoradorFilter) listaFiltros.get(i);
+
+            if (filtroo.getNombre().equals(nom)) {
                 encontre = true;
             }
 
         }
-            return filtro;
+            return filtroo;
     }
 
-    private Bitmap decodificar(String image_path){
-
+    private Bitmap decodificar(String image_path, int w,int h){
+        Resize r= new Resize();
+        return r.decodeSampledBitmapFromResource(image_path, w, h);
+        /**
         BitmapFactory.Options options = new BitmapFactory.Options();
         return BitmapFactory.decodeFile(image_path ,options);
+         */
+    }
+
+    @Override
+    public void onBackPressed(){
+
+        comand= new Vacio(null,null);
+        HistorialObserver.getInstance().push(comand);
+        super.onBackPressed();
     }
 }
 

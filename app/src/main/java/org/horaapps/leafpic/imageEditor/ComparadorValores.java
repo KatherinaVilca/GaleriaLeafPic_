@@ -16,6 +16,6 @@ public class ComparadorValores implements Comparator {
         int estadistica1= s.getEstadistica((String) valor1);
         int estadistica2= s.getEstadistica((String) valor2);
 
-        return Integer.compare(estadistica1, estadistica2);
+        return Integer.compare(estadistica2, estadistica1);
     }
 }
