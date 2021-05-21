@@ -85,7 +85,7 @@ public class FiltersActivity extends ThemedActivity {
         filter7 = findViewById(R.id.filter70);
 
        show_img.setImageURI(Uri.parse(imagePath));
-       
+
         initFilters();
 
         button_apply.setOnClickListener(view -> {
@@ -159,7 +159,6 @@ public class FiltersActivity extends ThemedActivity {
     private void initOriginal(){
 
        original.setImageBitmap(decodificar(imagePath,widthMinutaruta,heightMiniatura));
-        //original.setImageURI(Uri.parse(image_path));
 
         original.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,8 +205,6 @@ public class FiltersActivity extends ThemedActivity {
         ComparadorValores comparator = new ComparadorValores(sharedPreferencesFilters);
         listaNombresFiltros.sort(comparator);
 
-
-
         int i = 0;
         int f = sharedPreferencesFilters.getContador();
 
@@ -252,21 +249,8 @@ public class FiltersActivity extends ThemedActivity {
     private Bitmap decodificar(String imagePath, int w,int h){
 
         Resize r= new Resize();
-        Bitmap b= r.decodeSampledBitmapFromResource(imagePath, w, h);
+         return r.decodeSampledBitmapFromResource(imagePath, w, h);
 
-        System.out.println("QUE ONDA ACA El w es: "+b.getWidth()+" el h es: "+b.getHeight() );
-        /**
-        if( b.getWidth() < b.getHeight()) {
-
-            float grados = 90;
-            Matrix matrix = new Matrix();
-            matrix.setRotate(grados);
-           System.out.println("entro? ");
-            return Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, true);
-        }
-
-        */
-        return b;
     }
 
     private void estadoImageView(int tipo , int inicio){
