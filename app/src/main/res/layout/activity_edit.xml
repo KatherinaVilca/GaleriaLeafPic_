@@ -69,33 +69,23 @@
 
             <Button
                 android:id="@+id/button_crop"
-                android:layout_width="100dp"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:gravity="center|center_horizontal|center_vertical"
                 android:text="@string/recortar"
-                style="?android:attr/buttonStyleSmall"
-                android:textSize="12sp" />
+                android:textSize="11sp" />
 
             <Button
 
                 android:id="@+id/button_filters"
-                android:layout_width="100dp"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="175dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:scaleType="centerCrop"
                 android:text="@string/filtros"
-                style="?android:attr/buttonStyleSmall"
-                android:textSize="12sp" />
-
-            <Button
-                android:id="@+id/button_settings"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:scaleType="centerCrop"
-                android:text="@string/ajustes"
-                style="?android:attr/buttonStyleSmall"
                 android:textSize="12sp" />
 
         </LinearLayout>

@@ -29,5 +29,6 @@ public class ApplyFilter extends CommandEditor {
         }
 
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+
     }
 }

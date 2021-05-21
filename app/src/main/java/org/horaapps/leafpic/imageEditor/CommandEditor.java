@@ -9,16 +9,18 @@ import java.io.File;
 public abstract class CommandEditor extends ThemedActivity {
 
     protected String previusImagePath;
-    protected File file_anterior;
+    protected File fileAnterior;
 
     public CommandEditor(@Nullable String p, @Nullable File file_an){
         previusImagePath=p;
-        file_anterior=file_an;
+        fileAnterior=file_an;
     }
 
     public String deshacer(){
-        if (file_anterior!= null) {
-            file_anterior.delete();
+
+        if (fileAnterior!= null) {
+
+            fileAnterior.delete();
         }
         return previusImagePath;
     }

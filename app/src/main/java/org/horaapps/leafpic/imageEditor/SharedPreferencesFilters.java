@@ -30,11 +30,8 @@ public class SharedPreferencesFilters {
         SharedPreferences.Editor editor = sharedPref.edit();
         int valor = sharedPref.getInt(nombreFiltro,0);
         editor.putInt(nombreFiltro, valor+1);
-
         int con = sharedPref.getInt("Contador",0);
         editor.putInt("Contador",con+1);
-
-        System.out.println("El contador tiene: "+sharedPref.getInt("Contador",0));
         editor.apply();
     }
 

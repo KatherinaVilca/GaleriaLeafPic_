@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class KeysFilters {
+
     public static final String NIGHTWHISPERFILTER = "NightWhisperFilter";
     public static final String BLUEMESSFILTER = "BlueMessFilter";
     public static final String LIMESTUTTERFILTER = "LimeStutterFilter";

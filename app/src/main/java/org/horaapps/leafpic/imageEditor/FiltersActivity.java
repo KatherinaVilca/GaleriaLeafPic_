@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -24,16 +25,19 @@ import java.util.List;
 
 public class FiltersActivity extends ThemedActivity {
 
-    private String filtro_actual;
+    private String filtroActual;
     private ImageView show_img, original, filter1, filter2, filter3, filter4, filter5, filter6, filter7;
-    private String album_path;
+    private String albumPath;
 
     private Bitmap bitmapImagen;
-    private String image_path;
-    private CommandEditor comand;
-    private CommandEditor comandFilters;
+    private String imagePath;
     private LinkedList<Filter> listaFiltros;
-    private Bitmap redimencionImagen;
+    private CustomSampleFilters filtros;
+    private List<String> listaNombresFiltros;
+    private LinkedList<ImageView> views;
+
+    private final int widthMinutaruta = 248;
+    private final int heightMiniatura = 248;
 
     private SharedPreferencesFilters sharedPreferencesFilters;
 
@@ -43,9 +47,16 @@ public class FiltersActivity extends ThemedActivity {
 
     public void init_valores() {
 
-        album_path = getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
-        image_path = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
+        albumPath = getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
+        imagePath = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
 
+        Bitmap b = BitmapFactory.decodeFile(imagePath);
+        bitmapImagen = decodificar( imagePath , (b.getWidth() * 50)/100, (b.getHeight()*50)/100 );
+
+
+
+        filtros = new CustomSampleFilters();
+        listaFiltros = filtros.getListaFiltros();
     }
 
     public void onCreate(Bundle savedInstanceState) {
@@ -73,23 +84,28 @@ public class FiltersActivity extends ThemedActivity {
         filter6 = findViewById(R.id.filter60);
         filter7 = findViewById(R.id.filter70);
 
-        show_img.setImageURI(Uri.parse(image_path));
+       show_img.setImageURI(Uri.parse(imagePath));
 
+
+       // show_img.setImageBitmap(bitmapImagen);
         initFilters();
 
         button_apply.setOnClickListener(view -> {
 
+            Intent data = new Intent();
+            CommandEditor comand;
+
             String filename = String.format("%d.jpg", System.currentTimeMillis());
-            File outfile = new File(album_path, filename);
+            File outfile = new File(albumPath, filename);
 
             BitmapDrawable d2 = (BitmapDrawable) show_img.getDrawable();
             Bitmap bitmap = d2.getBitmap();
             Bitmap bitmap_a_modificar= bitmap.copy(Bitmap.Config.ARGB_8888,true);
-            comand = new ApplyFilter(bitmap_a_modificar, outfile, image_path);
 
-            sharedPreferencesFilters.aumentarEnUno(filtro_actual);
+            comand = new ApplyFilter(bitmap_a_modificar, outfile, imagePath);
 
-            Intent data = new Intent();
+            sharedPreferencesFilters.aumentarEnUno(filtroActual);
+
             comand.execute();
             HistorialObserver.getInstance().push(comand);
             data.putExtra("new_file", outfile.getPath());
@@ -119,56 +135,57 @@ public class FiltersActivity extends ThemedActivity {
 
     public void initFilters() {
 
-        CustomSampleFilters filtros = new CustomSampleFilters();
-        LinkedList<ImageView> views = getImageViews();
-        listaFiltros = filtros.getListaFiltros();
+        views = getImageViews();
 
         initOriginal();
-
-
-        int width = original.getDrawable().getIntrinsicWidth();
-        int height = original.getDrawable().getIntrinsicHeight();
-
-        //Bitmap resizedBitmap = Bitmap.createScaledBitmap( decodificar(image_path)  , width,height, false);
-        Bitmap resizedBitmap = decodificar(image_path,width,height);
-        initMiniaturaFiltros(views,listaFiltros, resizedBitmap,views.size());
+        initMiniaturaFiltros(views.size());
 
         for(int i=0; i<views.size() ;i++){
 
-             ImageView imageView = views.get(i);
-             DecoradorFilter filtro = (DecoradorFilter) listaFiltros.get(i);
+            ImageView imageView = views.get(i);
+            DecoradorFilter filtro = (DecoradorFilter) listaFiltros.get(i);
 
             imageView.setOnClickListener(view -> {
 
-                comandFilters = new ShowFilter(show_img, filtro, decodificar(image_path, show_img.getWidth(), show_img.getHeight()));
+                CommandEditor comandFilters;
+                comandFilters = new ShowFilter(show_img, filtro, bitmapImagen);
                 comandFilters.execute();
-                filtro_actual = filtro.getNombre();
+                filtroActual = filtro.getNombre();
             });
 
         }
 
-        for( int g=0; g<views.size(); g++){
-            views.get(g).setVisibility(View.VISIBLE);
-        }
+        estadoImageView(View.VISIBLE, 0);
     }
 
     private void initOriginal(){
 
-        original.setImageURI(Uri.parse(image_path));
-        original.setOnClickListener( view -> show_img.setImageURI(Uri.parse(image_path) ));
+       original.setImageBitmap(decodificar(imagePath,widthMinutaruta,heightMiniatura));
+        //original.setImageURI(Uri.parse(image_path));
+
+        original.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                show_img.setImageURI(Uri.parse(imagePath));
+            }
+        });
+
     }
 
-    private void initMiniaturaFiltros(LinkedList<ImageView> listaViews, LinkedList<Filter> listaFiltros, Bitmap resizedBitmap, int limite) {
+    private void initMiniaturaFiltros( int limite) {
 
         CommandEditor com;
 
         for(int i=0; i<limite; i++){
 
             DecoradorFilter d= (DecoradorFilter) listaFiltros.get(i);
-            com= new ShowFilter(listaViews.get(i) ,d ,resizedBitmap);
+
+            com= new ShowFilter(views.get(i) ,d , decodificar(imagePath, widthMinutaruta,heightMiniatura) );
             com.execute();
         }
     }
+
 
     private LinkedList<ImageView> getImageViews() {
 
@@ -187,38 +204,34 @@ public class FiltersActivity extends ThemedActivity {
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void initTopFilters() {
 
-        List<String> listaNombresFiltros = KeysFilters.listaNombresFiltros;
-        LinkedList<Filter> listaFiltros= new CustomSampleFilters().getListaFiltros();
-        LinkedList<ImageView> views = getImageViews();
+        listaNombresFiltros = KeysFilters.listaNombresFiltros;
         ComparadorValores comparator = new ComparadorValores(sharedPreferencesFilters);
         listaNombresFiltros.sort(comparator);
 
 
-        int i=0;
-        int f = sharedPreferencesFilters.getContador();
 
+        int i = 0;
+        int f = sharedPreferencesFilters.getContador();
 
         for ( ; i<f && i<3; i++) {
 
             DecoradorFilter filtrof = buscarFiltro(listaNombresFiltros.get(i), listaFiltros);
             ImageView imageView = views.get(i);
-            CommandEditor c= new ShowFilter(imageView,filtrof,decodificar(image_path, imageView.getWidth(), imageView.getHeight()));
-            c.execute();
+            CommandEditor cc = new ShowFilter(imageView,filtrof,decodificar(imagePath,widthMinutaruta,heightMiniatura));
+            cc.execute();
 
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                   System.out.println(filtrof.getNombre());
-                    comand = new ShowFilter(show_img, filtrof, decodificar(image_path,show_img.getWidth(), show_img.getHeight()));
-                    comand.execute();
+                    CommandEditor cm;
+                    cm = new ShowFilter(show_img, filtrof, bitmapImagen);
+                    cm.execute();
                 }
             });
         }
-        int k= i;
-        for(; k< views.size(); k++){
-            views.get(k).setVisibility(View.GONE);
-        }
+
+       estadoImageView(View.GONE , i);
     }
 
     private DecoradorFilter buscarFiltro(String nom, LinkedList<Filter> listaFiltros) {
@@ -238,20 +251,40 @@ public class FiltersActivity extends ThemedActivity {
             return filtroo;
     }
 
-    private Bitmap decodificar(String image_path, int w,int h){
+    private Bitmap decodificar(String imagePath, int w,int h){
+
         Resize r= new Resize();
-        return r.decodeSampledBitmapFromResource(image_path, w, h);
+        Bitmap b= r.decodeSampledBitmapFromResource(imagePath, w, h);
+
+        System.out.println("QUE ONDA ACA El w es: "+b.getWidth()+" el h es: "+b.getHeight() );
         /**
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        return BitmapFactory.decodeFile(image_path ,options);
-         */
+        if( b.getWidth() < b.getHeight()) {
+
+            float grados = 90;
+            Matrix matrix = new Matrix();
+            matrix.setRotate(grados);
+           System.out.println("entro? ");
+            return Bitmap.createBitmap(b, 0, 0, b.getWidth(), b.getHeight(), matrix, true);
+        }
+
+        */
+        return b;
+    }
+
+    private void estadoImageView(int tipo , int inicio){
+
+        for ( ; inicio< views.size(); inicio++){
+
+            views.get(inicio).setVisibility(tipo);
+        }
     }
 
     @Override
     public void onBackPressed(){
 
-        comand= new Vacio(null,null);
-        HistorialObserver.getInstance().push(comand);
+        CommandEditor commandVacio;
+        commandVacio= new Vacio(null,null);
+        HistorialObserver.getInstance().push(commandVacio);
         super.onBackPressed();
     }
 }

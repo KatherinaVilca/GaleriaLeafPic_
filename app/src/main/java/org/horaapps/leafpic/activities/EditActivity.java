@@ -18,7 +18,6 @@ import org.horaapps.leafpic.imageEditor.CommandEditor;
 import org.horaapps.leafpic.imageEditor.CutActivity;
 import org.horaapps.leafpic.imageEditor.FiltersActivity;
 import org.horaapps.leafpic.imageEditor.HistorialObserver;
-import org.horaapps.leafpic.imageEditor.ImageSettingsActivity;
 import org.horaapps.leafpic.imageEditor.SaveImage;
 import org.horaapps.liz.ThemedActivity;
 
@@ -36,7 +35,7 @@ public class EditActivity extends ThemedActivity {
     private Stack<CommandEditor> historial;
     private Observer observer;
     private Bitmap bitmapOriginal;
-    private String new_path;
+    private String newPath;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -50,7 +49,6 @@ public class EditActivity extends ThemedActivity {
         Button buttonCrop;
         Button buttonSave;
         Button buttonDeshacer;
-        Button buttonSettings;
 
         init_valores();
         setSupportActionBar(toolbar);
@@ -60,7 +58,7 @@ public class EditActivity extends ThemedActivity {
         buttonCrop = findViewById(R.id.button_crop);
         buttonSave = findViewById(R.id.button_save);
         buttonDeshacer = findViewById(R.id.button_deshacer);
-        buttonSettings=findViewById(R.id.button_settings);
+
         img = findViewById(R.id.edit_imag);
 
         img.setImageURI(Uri.parse(imagenPath));
@@ -80,7 +78,7 @@ public class EditActivity extends ThemedActivity {
 
             new SaveImage(EditActivity.this.getApplicationContext(),imagenPath,albumPath).execute();
             HistorialObserver.getInstance().deleteObserver(observer);
-            HistorialObserver.getInstance().destruir(); // solo cuando me voy de la app
+            HistorialObserver.getInstance().destruir();
             anular();
             onBackPressed();
 
@@ -91,17 +89,10 @@ public class EditActivity extends ThemedActivity {
            Intent cutIntent= new Intent(EditActivity.this.getApplicationContext(), CutActivity.class);
            cutIntent.putExtra("EXTRA_PATH",imagenPath);
            startActivityForResult(cutIntent,request_code_filters_Activity);
+
         });
 
-        buttonDeshacer.setOnClickListener(view -> { undo(); }); // VER. Si voy a una activity secundaria y no hago nada (por mas que antes si haya echo algo), se rompe. Historial is a null reference-
-
-        buttonSettings.setOnClickListener(view -> {
-
-            Intent settingsIntent= new Intent(EditActivity.this.getApplicationContext(), ImageSettingsActivity.class);
-            settingsIntent.putExtra("EXTRA_ALBUM_PATH",albumPath);
-            settingsIntent.putExtra("EXTRA_IMAGE_PATH",imagenPath);
-            startActivityForResult(settingsIntent,request_code_filters_Activity);
-        });
+        buttonDeshacer.setOnClickListener(view -> { undo(); });
 
         img.setOnTouchListener(new View.OnTouchListener(){
 
@@ -138,7 +129,7 @@ public class EditActivity extends ThemedActivity {
 
     private void undo() {
 
-        String new_path;
+        String path;
 
         if (historial.isEmpty()) {
 
@@ -156,9 +147,9 @@ public class EditActivity extends ThemedActivity {
                 return;
             }
 
-            new_path = command.deshacer();
-            img.setImageURI(Uri.parse(new_path));
-                toUpdatePath(new_path);
+            path = command.deshacer();
+            img.setImageURI(Uri.parse(path));
+                toUpdatePath(path);
     }
 
 
@@ -168,10 +159,10 @@ public class EditActivity extends ThemedActivity {
 
         if (data != null && resultCode == RESULT_OK) {
 
-            new_path = data.getStringExtra("new_file");
-            Bitmap bitmap = BitmapFactory.decodeFile(new_path);
+            newPath = data.getStringExtra("new_file");
+            Bitmap bitmap = BitmapFactory.decodeFile(newPath);
             img.setImageBitmap(bitmap);
-            toUpdatePath(new_path);
+            toUpdatePath(newPath);
 
         }
     }
@@ -187,9 +178,9 @@ public class EditActivity extends ThemedActivity {
        HistorialObserver.getInstance().destruir();
        anular();
 
-       if(new_path != null){
+       if(newPath != null){
 
-            File f= new File(new_path);
+            File f= new File(newPath);
             f.delete();
        }
 
@@ -218,6 +209,12 @@ public class EditActivity extends ThemedActivity {
         super.onDestroy();
         HistorialObserver.getInstance().deleteObserver(observer);
         anular();
+
+        if(newPath != null){
+
+            File f= new File(newPath);
+            f.delete();
+        }
     }
 
     public Observer obtenerObservador(){

@@ -15,6 +15,7 @@ public class SaveImage extends CommandEditor{
     protected String album_path;
     protected  String path;
     private final Context context;
+
     public SaveImage(Context context, String path, String album_path){
 
         super(null,null);
@@ -37,5 +38,6 @@ public class SaveImage extends CommandEditor{
 
         BitmapFactory.decodeFile(path).compress(Bitmap.CompressFormat.JPEG,100,outputStream);
         StorageHelper.copyFile(context, outfile, new File(album_path));
+
     }
 }

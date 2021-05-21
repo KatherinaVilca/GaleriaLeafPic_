@@ -25,6 +25,7 @@ public class CutActivity extends ThemedActivity{
         imagePath = getIntent().getExtras().getString("EXTRA_PATH");
 
         execute();
+
         comand= new Cut(imagePath);
         comand.execute();
         HistorialObserver.getInstance().push(comand);
