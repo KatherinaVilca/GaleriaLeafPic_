@@ -10,7 +10,6 @@ public class ApplyFilter extends CommandEditor {
 
     private File outfile;
     private Bitmap bitmap;
-    private DecoradorFilter filtro;
 
     public ApplyFilter(Bitmap bitmap, File outfile, String path) {
 

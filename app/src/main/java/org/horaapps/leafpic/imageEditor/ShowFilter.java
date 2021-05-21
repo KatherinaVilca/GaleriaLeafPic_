@@ -11,8 +11,6 @@ public class ShowFilter extends CommandEditor{
     protected Filter filtro;
     private final Bitmap bitmap;
     private final ImageView img;
-    private int width;
-    private int height;
 
     public ShowFilter(ImageView img, Filter filter, Bitmap bitmap){
 
