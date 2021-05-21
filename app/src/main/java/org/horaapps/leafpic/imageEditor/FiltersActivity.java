@@ -85,9 +85,7 @@ public class FiltersActivity extends ThemedActivity {
         filter7 = findViewById(R.id.filter70);
 
        show_img.setImageURI(Uri.parse(imagePath));
-
-
-       // show_img.setImageBitmap(bitmapImagen);
+       
         initFilters();
 
         button_apply.setOnClickListener(view -> {
