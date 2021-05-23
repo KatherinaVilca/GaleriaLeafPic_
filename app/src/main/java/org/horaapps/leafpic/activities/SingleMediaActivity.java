@@ -41,7 +41,6 @@ import com.bumptech.glide.Glide;
 import com.mikepenz.community_material_typeface_library.CommunityMaterial;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.orhanobut.hawk.Hawk;
-import com.yalantis.ucrop.UCrop;
 
 import org.horaapps.leafpic.R;
 import org.horaapps.leafpic.SelectAlbumBuilder;
@@ -147,7 +146,6 @@ public class SingleMediaActivity extends SharedMediaActivity implements BaseMedi
                 default:
                     loadUri(getIntent().getData());
                     break;
-
             }
         }
 
@@ -699,7 +697,6 @@ public class SingleMediaActivity extends SharedMediaActivity implements BaseMedi
         return super.onOptionsItemSelected(item);
     }
 
-    // CREO QUE ES PARA OBTENER LA IMAGEN
     public Media getCurrentMedia() {
         return media.get(position);
     }
@@ -824,21 +821,6 @@ public class SingleMediaActivity extends SharedMediaActivity implements BaseMedi
             }
         });
         colorAnimation.start();
-    }
-
-    @SuppressWarnings("ResourceAsColor")
-    private UCrop.Options getUcropOptions() {
-
-        UCrop.Options options = new UCrop.Options();
-        options.setCompressionFormat(Bitmap.CompressFormat.PNG);
-        options.setCompressionQuality(90);
-        options.setActiveWidgetColor(getAccentColor());
-        options.setToolbarColor(getPrimaryColor());
-        options.setStatusBarColor(isTranslucentStatusBar() ? ColorPalette.getObscuredColor(getPrimaryColor()) : getPrimaryColor());
-        options.setCropFrameColor(getAccentColor());
-        options.setFreeStyleCropEnabled(true);
-
-        return options;
     }
 
     @Override

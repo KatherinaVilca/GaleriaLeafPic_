@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 import android.view.View;
@@ -63,6 +64,7 @@ public class EditActivity extends ThemedActivity {
 
         img.setImageURI(Uri.parse(imagenPath));
 
+        carpetaTemporales();
         observer=obtenerObservador();
         HistorialObserver.getInstance().addObserver(observer);
 
@@ -131,7 +133,7 @@ public class EditActivity extends ThemedActivity {
 
         String path;
 
-        if (historial.isEmpty()) {
+        if ( historial == null || historial.isEmpty() ) {
 
             return;
         }
@@ -151,7 +153,6 @@ public class EditActivity extends ThemedActivity {
             img.setImageURI(Uri.parse(path));
                 toUpdatePath(path);
     }
-
 
 
 
@@ -226,4 +227,21 @@ public class EditActivity extends ThemedActivity {
        historial = null;
        observer = null;
     }
+
+    private void carpetaTemporales() {
+        //controlar la uinca creacion
+
+        File file = Environment.getExternalStorageDirectory();
+        File dir = new File(file.getPath() + "/Ediciones");
+
+        if (dir.exists()) {
+            return;
+        }
+
+         dir.mkdir();
+    }
+
+
+
+
 }

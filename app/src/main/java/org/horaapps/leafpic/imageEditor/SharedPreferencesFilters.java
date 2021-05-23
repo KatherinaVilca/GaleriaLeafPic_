@@ -14,7 +14,6 @@ public class SharedPreferencesFilters {
     }
     public void setEstadistica(String nombreFiltro, int cantidad){
 
-
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(nombreFiltro,cantidad);
         editor.apply();

@@ -3,12 +3,14 @@ package org.horaapps.leafpic.imageEditor;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 
 import org.horaapps.leafpic.data.StorageHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class SaveImage extends CommandEditor{
 
@@ -28,16 +30,22 @@ public class SaveImage extends CommandEditor{
 
         FileOutputStream outputStream= null;
         String filename= String.format("%d.jpg",System.currentTimeMillis());
-        File outfile= new File(album_path,filename);
+
+        File file = Environment.getExternalStorageDirectory();
+        File dir = new File(file.getPath() + "/Ediciones");
+
+        File outfile= new File(dir,filename);
 
         try {
             outputStream= new FileOutputStream(outfile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         BitmapFactory.decodeFile(path).compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-        StorageHelper.copyFile(context, outfile, new File(album_path));
+        StorageHelper.copyFile(context, outfile, dir);
 
     }
 }

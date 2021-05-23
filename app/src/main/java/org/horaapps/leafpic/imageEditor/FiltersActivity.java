@@ -9,7 +9,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -26,15 +28,18 @@ import java.util.List;
 public class FiltersActivity extends ThemedActivity {
 
     private String filtroActual;
-    private ImageView show_img, original, filter1, filter2, filter3, filter4, filter5, filter6, filter7;
+    private ImageView  original, filter1, filter2, filter3, filter4, filter5, filter6, filter7;
     private String albumPath;
-
+ private ImageView show_img;
     private Bitmap bitmapImagen;
     private String imagePath;
     private LinkedList<Filter> listaFiltros;
     private CustomSampleFilters filtros;
     private List<String> listaNombresFiltros;
     private LinkedList<ImageView> views;
+    //private AppCompatImageView show_img;
+
+    //private ImageFragment
 
     private final int widthMinutaruta = 248;
     private final int heightMiniatura = 248;
@@ -50,10 +55,8 @@ public class FiltersActivity extends ThemedActivity {
         albumPath = getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
         imagePath = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
 
-        Bitmap b = BitmapFactory.decodeFile(imagePath);
-        bitmapImagen = decodificar( imagePath , (b.getWidth() * 50)/100, (b.getHeight()*50)/100 );
-
-
+       Bitmap b= BitmapFactory.decodeFile(imagePath);
+         bitmapImagen = decodificar( imagePath , (b.getWidth() * 50)/100, (b.getHeight()*50)/100 );
 
         filtros = new CustomSampleFilters();
         listaFiltros = filtros.getListaFiltros();
@@ -84,9 +87,11 @@ public class FiltersActivity extends ThemedActivity {
         filter6 = findViewById(R.id.filter60);
         filter7 = findViewById(R.id.filter70);
 
-       show_img.setImageURI(Uri.parse(imagePath));
+        show_img.setImageBitmap(bitmapImagen);
+       //show_img.setImageURI(Uri.parse(imagePath));
 
         initFilters();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         button_apply.setOnClickListener(view -> {
 
@@ -94,23 +99,29 @@ public class FiltersActivity extends ThemedActivity {
             CommandEditor comand;
 
             String filename = String.format("%d.jpg", System.currentTimeMillis());
-            File outfile = new File(albumPath, filename);
 
-            BitmapDrawable d2 = (BitmapDrawable) show_img.getDrawable();
-            Bitmap bitmap = d2.getBitmap();
-            Bitmap bitmap_a_modificar= bitmap.copy(Bitmap.Config.ARGB_8888,true);
+           //
+                File file = Environment.getExternalStorageDirectory();
+                File dir = new File(file.getPath() + "/Ediciones");
+                //System.out.println("El path de album es: "+albumPath);
 
-            comand = new ApplyFilter(bitmap_a_modificar, outfile, imagePath);
+                File outfile = new File(dir, filename);
 
-            sharedPreferencesFilters.aumentarEnUno(filtroActual);
 
-            comand.execute();
-            HistorialObserver.getInstance().push(comand);
-            data.putExtra("new_file", outfile.getPath());
-            setResult(Activity.RESULT_OK, data);
+                BitmapDrawable d2 = (BitmapDrawable) show_img.getDrawable();
+                Bitmap bitmap = d2.getBitmap();
+                Bitmap bitmap_a_modificar = bitmap.copy(Bitmap.Config.ARGB_8888, true);
 
-            onBackPressed();
+                comand = new ApplyFilter(bitmap_a_modificar, outfile, imagePath);
 
+                sharedPreferencesFilters.aumentarEnUno(filtroActual);
+
+                comand.execute();
+                HistorialObserver.getInstance().push(comand);
+                data.putExtra("new_file", outfile.getPath());
+                setResult(Activity.RESULT_OK, data);
+
+                onBackPressed();
         });
 
 
