@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -35,8 +35,8 @@ public class EditActivity extends ThemedActivity {
     private static final int request_code_filters_Activity = 2;
     private Stack<CommandEditor> historial;
     private Observer observer;
-    private Bitmap bitmapOriginal;
     private String newPath;
+    private String pathOriginal;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -70,9 +70,13 @@ public class EditActivity extends ThemedActivity {
 
         buttonFilters.setOnClickListener(view -> {
 
+            BitmapDrawable d2 = (BitmapDrawable) img.getDrawable();
+            Bitmap bitmap = d2.getBitmap();
+            System.out.println("en edit: "+bitmap.getWidth()+" "+bitmap.getHeight());
+
             Intent editionIntent = new Intent(getApplicationContext(), FiltersActivity.class);
-            editionIntent.putExtra("EXTRA_ALBUM_PATH",albumPath);
             editionIntent.putExtra("EXTRA_IMAGE_PATH",imagenPath);
+
             startActivityForResult(editionIntent,request_code_filters_Activity);
 
         });
@@ -94,22 +98,20 @@ public class EditActivity extends ThemedActivity {
 
         });
 
-        buttonDeshacer.setOnClickListener(view -> { undo(); });
+        buttonDeshacer.setOnClickListener(view -> undo() );
 
-        img.setOnTouchListener(new View.OnTouchListener(){
+        img.setOnTouchListener((v, event) -> {
 
-            public boolean onTouch(View v, MotionEvent event) {
-                switch(event.getAction())
-                {
-                    case MotionEvent.ACTION_DOWN :
-                        img.setImageBitmap(bitmapOriginal);
-                        break;
-                    case MotionEvent.ACTION_UP :
-                        img.setImageURI(Uri.parse(imagenPath));
-                        break;
-                }
-                return true;
+            switch(event.getAction())
+            {
+                case MotionEvent.ACTION_DOWN :
+                    img.setImageURI(Uri.parse(pathOriginal));
+                    break;
+                case MotionEvent.ACTION_UP :
+                    img.setImageURI(Uri.parse(imagenPath));
+                    break;
             }
+            return true;
         });
 
     }
@@ -118,16 +120,9 @@ public class EditActivity extends ThemedActivity {
 
         albumPath= getIntent().getExtras().getString("EXTRA_ALBUM_PATH");
         imagenPath = getIntent().getExtras().getString("EXTRA_IMAGE_PATH");
-
-        if(bitmapOriginal == null){
-            setOriginalBitmap(imagenPath);
-        }
+        pathOriginal = imagenPath;
     }
 
-    private void setOriginalBitmap(String imagenPath){
-
-        bitmapOriginal = BitmapFactory.decodeFile(imagenPath);
-    }
 
     private void undo() {
 
@@ -175,6 +170,7 @@ public class EditActivity extends ThemedActivity {
    @Override
    public void onBackPressed(){
 
+       super.onBackPressed();
        HistorialObserver.getInstance().deleteObserver(observer);
        HistorialObserver.getInstance().destruir();
        anular();
@@ -185,7 +181,7 @@ public class EditActivity extends ThemedActivity {
             f.delete();
        }
 
-       super.onBackPressed();
+
    }
 
     @Override
@@ -229,7 +225,6 @@ public class EditActivity extends ThemedActivity {
     }
 
     private void carpetaTemporales() {
-        //controlar la uinca creacion
 
         File file = Environment.getExternalStorageDirectory();
         File dir = new File(file.getPath() + "/Ediciones");

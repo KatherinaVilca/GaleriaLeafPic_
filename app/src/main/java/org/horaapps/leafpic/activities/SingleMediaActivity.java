@@ -498,14 +498,17 @@ public class SingleMediaActivity extends SharedMediaActivity implements BaseMedi
 
             case R.id.rotate_180:
                 rotateImage(180);
+                System.out.println("A 180");
                 break;
 
             case R.id.rotate_right_90:
                 rotateImage(90);
+                System.out.println("A 90");
                 break;
 
             case R.id.rotate_left_90:
                 rotateImage(-90);
+                System.out.println("A -90");
                 break;
 
 

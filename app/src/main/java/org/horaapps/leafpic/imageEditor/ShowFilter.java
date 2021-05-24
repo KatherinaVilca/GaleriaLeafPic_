@@ -18,10 +18,6 @@ public class ShowFilter extends CommandEditor{
         this.img=img;
         this.filtro = filter;
         this.bitmap = bitmap;
-
-        if(bitmap == null){
-            System.out.println("dio nulo");
-        }
     }
 
     public void execute() {

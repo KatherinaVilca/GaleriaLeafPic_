@@ -27,7 +27,7 @@ import java.io.IOException;
  *  Try to separate out Database logic and projections from this class */
 public class Media implements TimelineItem, CursorHandler, Parcelable {
 
-    private static final String[] sProjection = new String[] {
+    private static final String[] sProjection = new String[]{
             MediaStore.Images.Media.DATA,
             MediaStore.Images.Media.DATE_TAKEN,
             MediaStore.Images.Media.MIME_TYPE,
@@ -50,7 +50,6 @@ public class Media implements TimelineItem, CursorHandler, Parcelable {
 
     private long size = -1;
     private boolean selected = false;
-    private Bitmap bitmap;
 
     public Media() {
     }
@@ -175,8 +174,6 @@ public class Media implements TimelineItem, CursorHandler, Parcelable {
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
         bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth(), bitmap.getHeight(), true);
-
-        this.bitmap= bitmap;
         return bitmap;
     }
 
@@ -304,7 +301,4 @@ public class Media implements TimelineItem, CursorHandler, Parcelable {
         return TYPE_MEDIA;
     }
 
-    public void setBitmap(Bitmap bitmap){
-        this.bitmap=bitmap;
-    }
 }

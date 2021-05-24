@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 public class CustomSampleFilters {
 
-    private LinkedList<Filter> listaFiltros = new LinkedList<Filter>();
+    protected LinkedList<Filter> listaFiltros = new LinkedList<>();
 
     public static Filter getStarLitFilter() {
 
@@ -78,7 +78,7 @@ public class CustomSampleFilters {
 
     }
 
-    private void addFilter(){
+    protected void addFilter(){
 
         listaFiltros.add(getBlueMessFilter());
         listaFiltros.add(getAweStruckVibeFilter());

@@ -7,17 +7,19 @@ public class Resize {
 
     public Resize(){}
 
+
     public Bitmap decodeSampledBitmapFromResource(String r, int reqWidth, int reqHeight) {
 
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
+
         BitmapFactory.decodeFile(r, options);
 
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        options.inSampleSize = calculateInSampleSize(options,  reqWidth, reqHeight);
 
         options.inJustDecodeBounds = false;
 
-        return BitmapFactory.decodeFile(r, options) ;
+        return UImage.decodeBitmap(r,options);
     }
 
     static int calculateInSampleSize( BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -25,6 +27,7 @@ public class Resize {
         int inSampleSize = 1;
         final int height = options.outHeight;
         final int width = options.outWidth ;
+
 
         if (height > reqHeight || width > reqWidth) {
 

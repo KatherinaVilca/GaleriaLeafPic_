@@ -33,19 +33,20 @@ public class SaveImage extends CommandEditor{
 
         File file = Environment.getExternalStorageDirectory();
         File dir = new File(file.getPath() + "/Ediciones");
-
         File outfile= new File(dir,filename);
 
         try {
             outputStream= new FileOutputStream(outfile);
+            BitmapFactory.decodeFile(path).compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+            StorageHelper.copyFile(context, outfile, dir);
+            outputStream.flush();
+            outputStream.close();
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        BitmapFactory.decodeFile(path).compress(Bitmap.CompressFormat.JPEG,100,outputStream);
-        StorageHelper.copyFile(context, outfile, dir);
 
     }
 }

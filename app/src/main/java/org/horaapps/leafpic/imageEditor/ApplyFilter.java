@@ -9,32 +9,29 @@ import java.io.IOException;
 
 public class ApplyFilter extends CommandEditor {
 
-    private File outfile;
-    private Bitmap bitmap;
+    private final File outfile;
+    private final Bitmap bitmap;
 
     public ApplyFilter(Bitmap bitmap, File outfile, String path) {
 
         super(path, outfile);
         this.outfile = outfile;
         this.bitmap = bitmap;
-
-        if(bitmap == null){
-            System.out.println("es nulo");
-        }
  }
 
     public void execute() {
 
-        FileOutputStream outputStream = null;
+        FileOutputStream outputStream;
         try {
             outputStream = new FileOutputStream(outfile);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
+
         } catch (FileNotFoundException e ) {
             e.printStackTrace();
         }
-        catch (IOException e){
+        catch (IOException ignored){
 
         }
 
